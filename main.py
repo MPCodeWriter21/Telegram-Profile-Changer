@@ -1,15 +1,18 @@
+"""The Profile Changer!
+
+This script is for changing your Telegram profiles at a specific time.
+The script gets some profile photos based on the words you provide.
+"""
 import os
 import random
-
 from time import sleep
-from typing import List, Sequence, Union
+from typing import List, Union, Sequence
 
 import log21
 import requests
-
-from pyrogram import Client
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
+from pyrogram import Client
 
 RED = log21.get_color('Red')
 BLUE = log21.get_color('Blue')
@@ -25,8 +28,15 @@ RESET = log21.get_color('RESET')
 class ProfileChanger:
     time_to_sleep = 60 * 30  # in seconds
 
-    def __init__(self, api_id: int, api_hash: str, categories: List[str], time_to_sleep: int = 1800,
-                 clean: bool = False, level: Union[int, str] = 'INFO'):
+    def __init__(
+        self,
+        api_id: int,
+        api_hash: str,
+        categories: List[str],
+        time_to_sleep: int = 1800,
+        clean: bool = False,
+        level: Union[int, str] = 'INFO'
+    ):
         self.app = Client("session", api_id, api_hash)
         self.logger = log21.get_logger('ProfileChanger', level=level)
         if not categories:
@@ -75,15 +85,15 @@ class ProfileChanger:
         with open(name, "wb") as file:
             file.write(content)
         self.logger.debug('Downloaded the image!')
-        self.logger.debug(f'Image Size: {LRED}{(os.stat(name).st_size / 1024):.2f}{RESET} KiBs')
+        self.logger.debug(
+            f'Image Size: {LRED}{(os.stat(name).st_size / 1024):.2f}{RESET} KiBs'
+        )
 
         return name
 
     def change_profile(self, path: Union[str, os.PathLike]):
         self.logger.info('Setting the profile picture...')
         with self.app:
-            # photos = list(app.get_chat_photos("me"))
-            # app.delete_profile_photos([p.file_id for p in photos[1:]]) # Delete Profile Photos
             self.app.set_profile_photo(photo=path)
             if self.clean:
                 os.remove(path)  # Delete Downloaded Photo
@@ -94,8 +104,11 @@ class ProfileChanger:
         while True:
             try:
                 profile_path = self.get_new_profile()
-            except Exception as e:
-                self.logger.error(f'Failed to get new profile: {RED}{e.__class__.__name__}: {e}{RESET}')
+            except Exception as ex:
+                self.logger.error(
+                    f'Failed to get new profile: {RED}{ex.__class__.__name__}: '
+                    f'{ex}{RESET}'
+                )
                 continue
 
             # Checks if the script was able to find any images
@@ -106,12 +119,17 @@ class ProfileChanger:
             try:
                 # Set the Profile
                 self.change_profile(profile_path)
-            except Exception as e:
-                self.logger.error(f'Failed to set the profile: {RED}{e.__class__.__name__}: {e}{RESET}')
+            except Exception as ex:
+                self.logger.error(
+                    f'Failed to set the profile: {RED}{ex.__class__.__name__}: '
+                    f'{ex}{RESET}'
+                )
                 continue
 
             # Wait for some seconds
-            self.logger.info(f'Waiting for {LGREEN}{self.time_to_sleep}{RESET} seconds...')
+            self.logger.info(
+                f'Waiting for {LGREEN}{self.time_to_sleep}{RESET} seconds...'
+            )
             sleep(self.time_to_sleep)
 
 
@@ -120,15 +138,32 @@ log21.console_reporter.ignore(SystemExit)
 
 
 @log21.console_reporter.reporter
-def main():
+def main() -> None:
+    """The script's entry point."""
     parser = log21.ColorizingArgumentParser()
-    parser.add_argument('categories', action='store', nargs='+', help='Categories for profile photos.')
-    parser.add_argument('-id', '--api-id', action='store', type=int, help='Your telegram API-ID')
-    parser.add_argument('-hash', '--api-hash', action='store', help='Your telegram API-HASH')
-    parser.add_argument('-t', '--time-to-sleep', action='store', type=int,
-                        help='Change the profile every X seconds(Default: 1800)', default=1800)
-    parser.add_argument('-c', '--clean', action='store_true',
-                        help='Remove images from the storage after setting the profile.')
+    parser.add_argument(
+        'categories', action='store', nargs='+', help='Categories for profile photos.'
+    )
+    parser.add_argument(
+        '-id', '--api-id', action='store', type=int, help='Your telegram API-ID'
+    )
+    parser.add_argument(
+        '-hash', '--api-hash', action='store', help='Your telegram API-HASH'
+    )
+    parser.add_argument(
+        '-t',
+        '--time-to-sleep',
+        action='store',
+        type=int,
+        help='Change the profile every X seconds(Default: 1800)',
+        default=1800
+    )
+    parser.add_argument(
+        '-c',
+        '--clean',
+        action='store_true',
+        help='Remove images from the storage after setting the profile.'
+    )
     parser.add_argument('-v', '--verbose', action='store_true')
     parser.add_argument('-q', '--quiet', action='store_true')
     args = parser.parse_args()
@@ -151,11 +186,19 @@ def main():
         level = 'INFO'
 
     if not api_id:
-        log21.error('API-ID is not specified! Please use `-id` argument or put your API-ID in `.env` file.')
+        log21.error(
+            'API-ID is not specified! Please use `-id` argument or put your API-ID in '
+            '`.env` file.'
+        )
     if not api_hash:
-        log21.error('API-HASH is not specified! Please use `-hash` argument or put your API-HASH in `.env` file.')
+        log21.error(
+            'API-HASH is not specified! Please use `-hash` argument or put your '
+            'API-HASH in `.env` file.'
+        )
 
-    bot = ProfileChanger(api_id, api_hash, args.categories, args.time_to_sleep, args.clean, level)
+    bot = ProfileChanger(
+        api_id, api_hash, args.categories, args.time_to_sleep, args.clean, level
+    )
     bot.run()
 
 
