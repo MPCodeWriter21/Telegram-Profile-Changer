@@ -1,6 +1,8 @@
 Telegram Profile Changer
 ========================
 
+[![CodeFactor](https://www.codefactor.io/repository/github/mpcodewriter21/telegram-profile-changer/badge)](https://www.codefactor.io/repository/github/mpcodewriter21/telegram-profile-changer)
+
 This script is for changing your Telegram profiles at a specific time. The script gets some profile photos based on the
 words you provide.
 
@@ -32,7 +34,7 @@ Usage
 -----
 
 ```
-usage: ProfileChanger.py [-h] [-id API_ID] [-hash API_HASH] [-t TIME_TO_SLEEP] [-c] [-v] [-q]
+usage: main.py [-h] [-id API_ID] [-hash API_HASH] [-t TIME_TO_SLEEP] [-c] [-v] [-q]
                          categories [categories ...]
 
 positional arguments:
@@ -59,7 +61,7 @@ options:
 ```shell
 # Changes the profile every 30 seconds and searches for images about one of the words: 
 #   Python, Programming, Code, Computers
-python ProfileChanger.py -t 30 Python Programming Code Computers
+python main.py -t 30 Python Programming Code Computers
 ```
 
 Future
