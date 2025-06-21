@@ -5,3 +5,4 @@ Pyrogram>=2.0.41
 python-dotenv>=0.20.0
 TgCrypto>=1.2.3
 log21>=2.3.10
+urllib3>=2.5.0 # not directly required, pinned by Snyk to avoid a vulnerability
